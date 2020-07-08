@@ -25,5 +25,5 @@ CREATE TABLE exercises (
     is_lower INTEGER DEFAULT 0 NOT NULL,
     is_beginner INTEGER DEFAULT 0 NOT NULL,
     is_intermediate INTEGER DEFAULT 0 NOT NULL,
-    is_advanced INTEGER DEFAULT 0 NOT NULL,
+    is_advanced INTEGER DEFAULT 0 NOT NULL
 );
