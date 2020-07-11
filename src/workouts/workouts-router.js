@@ -8,8 +8,9 @@ const jsonParser = express.json()
 
 const serializeWorkouts = workouts => ({
   id: workouts.id,
-  title: xss(workouts.title),
-  completed: workouts.completed
+  user_id: workouts.user_id,
+  type: xss(workouts.type),
+  difficulty: xss(workouts.difficulty)
 })
 
 workoutsRouter

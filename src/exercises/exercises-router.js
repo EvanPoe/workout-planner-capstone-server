@@ -2,14 +2,24 @@ const path = require('path')
 const express = require('express')
 const xss = require('xss')
 const ExercisesService = require('./exercises-service')
+const workoutsRouter = require('../workouts/workouts-router')
 
 const exercisesRouter = express.Router()
 const jsonParser = express.json()
 
 const serializeExercises = exercises => ({
   id: exercises.id,
-  title: xss(exercises.title),
-  completed: exercises.completed
+  workout_id: exercises.workouts_id,
+  name: xss(exercises.name),
+  image: xss(exercises.image),
+  description: xss(exercises.description),
+  sets: xss(exercises.sets),
+  rest: xss(exercises.rest),
+  is_upper: exercises.is_upper,
+  is_lower: exercises.is_lower,
+  is_beginner: exercises.is_beginner,
+  is_intermediate: exercises.is_intermediate,
+  is_advanced: exercises.is_advanced
 })
 
 exercisesRouter
