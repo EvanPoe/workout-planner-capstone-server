@@ -25,6 +25,7 @@ const serializeExercises = exercises => ({
 exercisesRouter
   .route('/')
   .get((req, res, next) => {
+    console.log('hey hello')
     const knexInstance = req.app.get('db')
     ExercisesService.getExercisess(knexInstance)
       .then(exercisess => {
@@ -33,8 +34,8 @@ exercisesRouter
       .catch(next)
   })
   .post(jsonParser, (req, res, next) => {
-    const { title, completed = false } = req.body
-    const newExercises = { title }
+    const { workout_id, name, image, description, sets, rest, is_upper, is_lower, is_beginner, is_intermediate, is_advanced } = req.body
+    const newExercises = { workout_id, name, image, description, sets, rest, is_upper, is_lower, is_beginner, is_intermediate, is_advanced }
 
     for (const [key, value] of Object.entries(newExercises))
       if (value == null)
@@ -94,14 +95,14 @@ exercisesRouter
       .catch(next)
   })
   .patch(jsonParser, (req, res, next) => {
-    const { title, completed } = req.body
-    const exercisesToUpdate = { title, completed }
+    const { workout_id, name, image, description, sets, rest, is_upper, is_lower, is_beginner, is_intermediate, is_advanced } = req.body
+    const exercisesToUpdate = { workout_id, name, image, description, sets, rest, is_upper, is_lower, is_beginner, is_intermediate, is_advanced }
 
     const numberOfValues = Object.values(exercisesToUpdate).filter(Boolean).length
     if (numberOfValues === 0)
       return res.status(400).json({
         error: {
-          message: `Request body must content either 'title' or 'completed'`
+          message: `Request body must contain either 'workout_id', 'name', 'image', 'description', 'sets', 'rest', 'is_upper', 'is_lower', 'is_beginner', 'is_intermediate', or 'is_advanced'`
         }
       })
 

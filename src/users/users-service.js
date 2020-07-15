@@ -1,45 +1,56 @@
-const UsersService = {
-  getUserss(db) {
-    return db
-      .from('users')
-      .select(
-        'users.id',
-        'users.title',
-        'users.completed',
-      )
-  },
-  getUsersById(db, users_id) {
-    return db
-      .from('users')
-      .select(
-        'users.id',
-        'users.title',
-        'users.completed',
-      )
-      .where('users.id', users_id)
-      .first()
-  },
-  insertUsers(db, newUsers) {
-    return db
-      .insert(newUsers)
-      .into('users')
-      .returning('*')
-      .then(rows => {
-        return rows[0]
-      })
-  },
-  deleteUsers(db, users_id) {
-    return db('users')
-      .where({'id': users_id})
-      .delete()
-  },
-  updateUsers(db, users_id, newUsers) {
-    return db('users')
-      .where({id: users_id})
-      .update(newUsers, returning=true)
-      .returning('*')
-  }
+const xss = require('xss')
+const bcrypt = require('bcryptjs')
 
+const UsersService = {
+    serializeUser(user) {
+        // console.log(user)
+        return {
+            id: user.id,
+            email: xss(user.email),
+        }
+    },
+    getAllUsers(knex) {
+        return knex.select('*').from('users')
+    },
+    hasUserWithUserName(db, email) {
+        return db('users')
+            .where({ email })
+            .first()
+            .then(user => !!user)
+    },
+    insertUser(db, newUser) {
+        return db
+            .insert(newUser)
+            .into('users')
+            .returning('*')
+            .then(([user]) => user)
+    },
+    validatePassword(password) {
+        if (password.length < 6) {
+            return 'Password must be longer than 6 characters'
+        }
+        if (password.length > 72) {
+            return 'Password must be less than 72 characters'
+        }
+        if (password.startsWith(' ') || password.endsWith(' ')) {
+            return 'Password must not start or end with empty spaces'
+        }
+    },
+    hashPassword(password) {
+        return bcrypt.hash(password, 12)
+    },
+    deleteUser(knex, id) {
+        return knex('users')
+            .where({ id })
+            .delete()
+    },
+    getById(knex, id) {
+        return knex
+            .from('users')
+            .select('*')
+            .where('id', id)
+            .first()
+    },
 }
 
 module.exports = UsersService

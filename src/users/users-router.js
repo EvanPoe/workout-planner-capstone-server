@@ -1,109 +1,102 @@
-const path = require('path')
 const express = require('express')
-const xss = require('xss')
+const path = require('path')
+const usersRouter = express.Router()
+const jsonBodyParser = express.json()
 const UsersService = require('./users-service')
 
-const usersRouter = express.Router()
-const jsonParser = express.json()
 
-const serializeUsers = users => ({
-  id: users.id,
-  email: xss(users.email),
-  password: xss(users.password)
-})
-
+// All users
 usersRouter
-  .route('/')
-  .get((req, res, next) => {
-    const knexInstance = req.app.get('db')
-    UsersService.getUserss(knexInstance)
-      .then(userss => {
-        res.json(userss.map(serializeUsers))
-      })
-      .catch(next)
-  })
-  .post(jsonParser, (req, res, next) => {
-    const { title, completed = false } = req.body
-    const newUsers = { title }
-
-    for (const [key, value] of Object.entries(newUsers))
-      if (value == null)
-        return res.status(400).json({
-          error: { message: `Missing '${key}' in request body` }
+    .route('/')
+    .get((req, res, next) => {
+        UsersService.getAllUsers(req.app.get('db'))
+        .then(user => {
+            console.log('User:', user)
+            res.json(user)
         })
+        .catch(next)
+    })
+    .post(jsonBodyParser, (req, res, next) => {
+        const { email, password } = req.body
 
-    newUsers.completed = completed;  
+        console.log("email:", email, "password:", password);
 
-    UsersService.insertUsers(
-      req.app.get('db'),
-      newUsers
-    )
-      .then(users => {
-        res
-          .status(201)
-          .location(path.posix.join(req.originalUrl, `/${users.id}`))
-          .json(serializeUsers(users))
-      })
-      .catch(next)
-  })
+        for (const field of ['email', 'password'])
+            if (!req.body[field])
+                return res.status(400).json({
+                    error: `Missing '${field}' in request body`
+                })
+        const passwordError = UsersService.validatePassword(password)
 
+        console.log("password error:",passwordError);
+
+        if (passwordError)
+            return res.status(400).json({ error: passwordError })
+
+        UsersService.hasUserWithUserName(
+            req.app.get('db'),
+            email
+        )
+            .then(hasUserWithUserName => {
+
+                console.log("hasUserWithUserName:", hasUserWithUserName);
+
+                if (hasUserWithUserName)
+                    return res.status(400).json({ error: `Username already taken` })
+
+                return UsersService.hashPassword(password)
+                    .then(hashedPassword => {
+                        console.log("hashedpassword",hashedPassword);
+                        const newUser = {
+                            email,
+                            password: hashedPassword,
+                        }
+                        return UsersService.insertUser(
+                            req.app.get('db'),
+                            newUser
+                        )
+                            .then(user => {
+                                console.log("user:", user)
+                                res
+                                    .status(201)
+                                    .location(path.posix.join(req.originalUrl, `/${user.id}`))
+                                    .json(UsersService.serializeUser(user))
+                            })
+                    })
+            })
+            .catch(next)
+    })
+
+// Individual users by id
 usersRouter
-  .route('/:users_id')
-  .all((req, res, next) => {
-    if(isNaN(parseInt(req.params.users_id))) {
-      return res.status(404).json({
-        error: { message: `Invalid id` }
-      })
-    }
-    UsersService.getUsersById(
-      req.app.get('db'),
-      req.params.users_id
-    )
-      .then(users => {
-        if (!users) {
-          return res.status(404).json({
-            error: { message: `Users doesn't exist` }
-          })
-        }
-        res.users = users
-        next()
-      })
-      .catch(next)
-  })
-  .get((req, res, next) => {
-    res.json(serializeUsers(res.users))
-  })
-  .delete((req, res, next) => {
-    UsersService.deleteUsers(
-      req.app.get('db'),
-      req.params.users_id
-    )
-      .then(numRowsAffected => {
-        res.status(204).end()
-      })
-      .catch(next)
-  })
-  .patch(jsonParser, (req, res, next) => {
-    const { title, completed } = req.body
-    const usersToUpdate = { title, completed }
-
-    const numberOfValues = Object.values(usersToUpdate).filter(Boolean).length
-    if (numberOfValues === 0)
-      return res.status(400).json({
-        error: {
-          message: `Request body must content either 'title' or 'completed'`
-        }
-      })
-
-    UsersService.updateUsers(
-      req.app.get('db'),
-      req.params.users_id,
-      usersToUpdate
-    )
-      .then(updatedUsers => {
-        res.status(200).json(serializeUsers(updatedUsers[0]))
-      })
-      .catch(next)
-  })
+    .route('/:user_id')
+    .all((req, res, next) => {
+        const { user_id } = req.params;
+        UsersService.getById(req.app.get('db'), user_id)
+            .then(user => {
+                if (!user) {
+                    return res
+                        .status(404)
+                        .send({ error: { message: `User doesn't exist.` } })
+                }
+                res.user = user
+                next()
+            })
+            .catch(next)
+    })
+    .get((req, res) => {
+        res.json(UsersService.serializeUser(res.user))
+    })
+    .delete((req, res, next) => {
+        const { user_id } = req.params;
+        UsersService.deleteUser(
+            req.app.get('db'),
+            user_id
+        )
+            .then(numRowsAffected => {
+                res.status(204).end()
+            })
+            .catch(next)
+    })
 
 module.exports = usersRouter

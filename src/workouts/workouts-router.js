@@ -24,8 +24,8 @@ workoutsRouter
       .catch(next)
   })
   .post(jsonParser, (req, res, next) => {
-    const { title, completed = false } = req.body
-    const newWorkouts = { title }
+    const { user_id, type, difficulty } = req.body
+    const newWorkouts = { user_id, type, difficulty }
 
     for (const [key, value] of Object.entries(newWorkouts))
       if (value == null)
@@ -85,14 +85,14 @@ workoutsRouter
       .catch(next)
   })
   .patch(jsonParser, (req, res, next) => {
-    const { title, completed } = req.body
-    const workoutsToUpdate = { title, completed }
+    const { user_id, type, difficulty } = req.body
+    const workoutsToUpdate = { user_id, type, difficulty }
 
     const numberOfValues = Object.values(workoutsToUpdate).filter(Boolean).length
     if (numberOfValues === 0)
       return res.status(400).json({
         error: {
-          message: `Request body must content either 'title' or 'completed'`
+          message: `Request body must contain either 'user_id', 'type', or 'difficulty'`
         }
       })
 

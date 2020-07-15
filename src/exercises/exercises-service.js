@@ -2,11 +2,7 @@ const ExercisesService = {
   getExercisess(db) {
     return db
       .from('exercises')
-      .select(
-        'exercises.id',
-        'exercises.title',
-        'exercises.completed',
-      )
+      .select( '*' )
   },
   getExercisesById(db, exercises_id) {
     return db
