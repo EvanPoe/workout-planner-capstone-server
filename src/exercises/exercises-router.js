@@ -2,7 +2,7 @@ const path = require('path')
 const express = require('express')
 const xss = require('xss')
 const ExercisesService = require('./exercises-service')
-const workoutsRouter = require('../workouts/workouts-router')
+const workoutsRouter = require('../workouts/workouts-router') //??? not being used?
 
 const exercisesRouter = express.Router()
 const jsonParser = express.json()
@@ -34,6 +34,7 @@ exercisesRouter
       .catch(next)
   })
   .post(jsonParser, (req, res, next) => {
+    console.log("req.body = ", req.body)
     const { workout_id, name, image, description, sets, rest, is_upper, is_lower, is_beginner, is_intermediate, is_advanced } = req.body
     const newExercises = { workout_id, name, image, description, sets, rest, is_upper, is_lower, is_beginner, is_intermediate, is_advanced }
 
@@ -43,16 +44,16 @@ exercisesRouter
           error: { message: `Missing '${key}' in request body` }
         })
 
-    newExercises.completed = completed;  
+    // newExercises.completed = completed;  not needed?
 
     ExercisesService.insertExercises(
       req.app.get('db'),
       newExercises
     )
       .then(exercises => {
+        console.log("exercises from the service: ", exercises)
         res
           .status(201)
-          .location(path.posix.join(req.originalUrl, `/${exercises.id}`))
           .json(serializeExercises(exercises))
       })
       .catch(next)
@@ -61,6 +62,7 @@ exercisesRouter
 exercisesRouter
   .route('/:exercises_id')
   .all((req, res, next) => {
+    //if not a number, parse into a number.... then???
     if(isNaN(parseInt(req.params.exercises_id))) {
       return res.status(404).json({
         error: { message: `Invalid id` }
@@ -81,7 +83,7 @@ exercisesRouter
       })
       .catch(next)
   })
-  .get((req, res, next) => {
+  .get((req, res, next) => { //req and next not being used??
     res.json(serializeExercises(res.exercises))
   })
   .delete((req, res, next) => {
@@ -89,15 +91,17 @@ exercisesRouter
       req.app.get('db'),
       req.params.exercises_id
     )
-      .then(numRowsAffected => {
+      .then(numRowsAffected => { //??? never used?
         res.status(204).end()
       })
       .catch(next)
   })
+  //???
   .patch(jsonParser, (req, res, next) => {
     const { workout_id, name, image, description, sets, rest, is_upper, is_lower, is_beginner, is_intermediate, is_advanced } = req.body
     const exercisesToUpdate = { workout_id, name, image, description, sets, rest, is_upper, is_lower, is_beginner, is_intermediate, is_advanced }
-
+    //places the values of exercisesToUpdate object into an array, 
+    //filters into array filled with any booleans, gets length, returns error if 0
     const numberOfValues = Object.values(exercisesToUpdate).filter(Boolean).length
     if (numberOfValues === 0)
       return res.status(400).json({
@@ -105,7 +109,7 @@ exercisesRouter
           message: `Request body must contain either 'workout_id', 'name', 'image', 'description', 'sets', 'rest', 'is_upper', 'is_lower', 'is_beginner', 'is_intermediate', or 'is_advanced'`
         }
       })
-
+      //then...??? how exactly?
     ExercisesService.updateExercises(
       req.app.get('db'),
       req.params.exercises_id,

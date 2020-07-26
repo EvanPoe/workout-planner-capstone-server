@@ -1,7 +1,9 @@
+//prevent cross site scripting attacks
 const xss = require('xss')
 const bcrypt = require('bcryptjs')
 
 const UsersService = {
+    //???serialize basically filters (not important to know in this course)
     serializeUser(user) {
         // console.log(user)
         return {
@@ -9,12 +11,15 @@ const UsersService = {
             email: xss(user.email),
         }
     },
-    getAllUsers(knex) {
+    //??? can we walk through 15 - 30?
+    //knex: middleware which helps node connect to database
+    getAllUsers(knex) { //knex is loaded in the parent (app.js or server.js) not child
         return knex.select('*').from('users')
     },
     hasUserWithUserName(db, email) {
+        //makes sure username doesn't already exist in database
         return db('users')
-            .where({ email })
+            .where({ email }) 
             .first()
             .then(user => !!user)
     },
@@ -25,6 +30,7 @@ const UsersService = {
             .returning('*')
             .then(([user]) => user)
     },
+    //I get validatePassword
     validatePassword(password) {
         if (password.length < 6) {
             return 'Password must be longer than 6 characters'
@@ -36,6 +42,7 @@ const UsersService = {
             return 'Password must not start or end with empty spaces'
         }
     },
+    //??? generate a "hash" for the password?
     hashPassword(password) {
         return bcrypt.hash(password, 12)
     },

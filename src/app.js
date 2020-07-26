@@ -26,10 +26,17 @@ app.use(helmet())
 app.use(express.static('public'))
 
 app.use('/v1/todos', todoRouter)
+//load in registration router (post a user to register)
 app.use('/api/users', usersRouter)
+//load in the authentication router
 app.use('/api/auth', authRouter)
+//load in the exercises router
 app.use('/api/exercises', exercisesRouter)
+//load in the workouts router
 app.use('/api/workouts', workoutsRouter)
+//??? 
 app.use(errorHandler)
 
 module.exports = app
+
+//go through router.js and service.js files

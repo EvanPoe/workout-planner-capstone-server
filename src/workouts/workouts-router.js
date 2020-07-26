@@ -33,8 +33,6 @@ workoutsRouter
           error: { message: `Missing '${key}' in request body` }
         })
 
-    newWorkouts.completed = completed;  
-
     WorkoutsService.insertWorkouts(
       req.app.get('db'),
       newWorkouts
@@ -71,7 +69,7 @@ workoutsRouter
       })
       .catch(next)
   })
-  .get((req, res, next) => {
+  .get((req, res, next) => { //vaules never used
     res.json(serializeWorkouts(res.workouts))
   })
   .delete((req, res, next) => {
@@ -79,7 +77,7 @@ workoutsRouter
       req.app.get('db'),
       req.params.workouts_id
     )
-      .then(numRowsAffected => {
+      .then(numRowsAffected => {//vaule never used
         res.status(204).end()
       })
       .catch(next)

@@ -1,4 +1,5 @@
 const express = require('express')
+//??? path helps connect files with each other by figuring out the full path of the application
 const path = require('path')
 const usersRouter = express.Router()
 const jsonBodyParser = express.json()
@@ -20,7 +21,6 @@ usersRouter
         const { email, password } = req.body
 
         console.log("email:", email, "password:", password);
-
         for (const field of ['email', 'password'])
             if (!req.body[field])
                 return res.status(400).json({
@@ -37,7 +37,7 @@ usersRouter
             req.app.get('db'),
             email
         )
-            .then(hasUserWithUserName => {
+            .then(hasUserWithUserName => { //let response = hasUserWithUserName
 
                 console.log("hasUserWithUserName:", hasUserWithUserName);
 
@@ -59,6 +59,8 @@ usersRouter
                                 console.log("user:", user)
                                 res
                                     .status(201)
+                                    //after the user is created, redirect the user directly to that newly created id
+                                    //backend locations usually only work when routes are in postman, not in front end(react)
                                     .location(path.posix.join(req.originalUrl, `/${user.id}`))
                                     .json(UsersService.serializeUser(user))
                             })
