@@ -68,7 +68,7 @@ exercisesRouter
         error: { message: `Invalid id` }
       })
     }
-    ExercisesService.getExercisesById(
+    ExercisesService.getExercisesByExerciseId(
       req.app.get('db'),
       req.params.exercises_id
     )
@@ -120,5 +120,35 @@ exercisesRouter
       })
       .catch(next)
   })
+  
+exercisesRouter
+.route('/workout/:workout_id')
+.all((req, res, next) => {
+  //if not a number, parse into a number.... then???
+  if(isNaN(parseInt(req.params.workout_id))) {
+    return res.status(404).json({
+      error: { message: `Invalid id` }
+    })
+  }
+  ExercisesService.getExercisesByWorkoutId(
+    req.app.get('db'),
+    req.params.workout_id
+  )
+    .then(exercises => {
+      if (!exercises) {
+        return res.status(404).json({
+          error: { message: `Exercises doesn't exist` }
+        })
+      }
+      res.exercises = exercises
+      next()
+    })
+    .catch(next)
+})
+.get((req, res, next) => { //req and next not being used??
+  res.json(res.exercises)
+})
+
+
 
 module.exports = exercisesRouter

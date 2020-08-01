@@ -6,12 +6,18 @@ const ExercisesService = {
       .select( '*' )
   },
   //select exercises id and title where id matches the id passed
-  getExercisesById(db, exercises_id) {
+  getExercisesByExerciseId(db, exercises_id) {
     return db
       .from('exercises')
       .select("*")
       .where('exercises.id', exercises_id)
       .first()
+  },
+  getExercisesByWorkoutId(db, workout_id) {
+    return db
+      .from('exercises')
+      .select("*")
+      .where('exercises.workout_id', workout_id)
   },
   //insert new exercises into databse (exercises table)
   insertExercises(db, newExercises) {

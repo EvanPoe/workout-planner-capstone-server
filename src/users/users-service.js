@@ -11,7 +11,6 @@ const UsersService = {
             email: xss(user.email),
         }
     },
-    //??? can we walk through 15 - 30?
     //knex: middleware which helps node connect to database
     getAllUsers(knex) { //knex is loaded in the parent (app.js or server.js) not child
         return knex.select('*').from('users')
