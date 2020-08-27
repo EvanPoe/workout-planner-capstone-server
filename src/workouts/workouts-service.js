@@ -9,6 +9,12 @@ const WorkoutsService = {
       .where("workouts.id", workouts_id)
       .first();
   },
+  getWorkoutsByUserId(db, user_id) {
+    return db
+      .from("workouts")
+      .select("*")
+      .where("workouts.user_id", user_id)
+  },
   insertWorkouts(db, newWorkouts) {
     return db
       .insert(newWorkouts)

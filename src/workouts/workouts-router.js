@@ -13,6 +13,7 @@ const serializeWorkouts = workouts => ({
   difficulty: xss(workouts.difficulty)
 })
 
+//get all workouts
 workoutsRouter
   .route('/')
   .get((req, res, next) => {
@@ -46,6 +47,41 @@ workoutsRouter
       .catch(next)
   })
 
+
+
+//get workouts by user id
+workoutsRouter
+  .route('/users/:user_id')
+  .all((req, res, next) => {
+    if(isNaN(parseInt(req.params.user_id))) {
+      return res.status(404).json({
+        error: { message: `Invalid id` }
+      })
+    }
+    WorkoutsService.getWorkoutsByUserId(
+      req.app.get('db'),
+      req.params.user_id
+    )
+      .then(workouts => {
+        if (!workouts) {
+          return res.status(404).json({
+            error: { message: `Workouts doesn't exist` }
+          })
+        }
+        res.workouts = workouts
+        next()
+      })
+      .catch(next)
+  })
+  .get((req, res, next) => { 
+    //first map it, then serialize
+    res.json(res.workouts.map(serializeWorkouts))
+  })
+
+
+
+
+//get workouts by workout id
 workoutsRouter
   .route('/:workouts_id')
   .all((req, res, next) => {

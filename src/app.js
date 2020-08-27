@@ -28,7 +28,7 @@ app.use(express.static('public'))
 app.use('/v1/todos', todoRouter)
 //load in registration router (post a user to register)
 app.use('/api/users', usersRouter)
-//load in the authentication router
+//load in the authentication router, for login
 app.use('/api/auth', authRouter)
 //load in the exercises router
 app.use('/api/exercises', exercisesRouter)

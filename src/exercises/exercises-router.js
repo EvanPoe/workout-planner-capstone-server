@@ -24,6 +24,7 @@ const serializeExercises = exercises => ({
 
 exercisesRouter
   .route('/')
+  //get all exercises from database
   .get((req, res, next) => {
     console.log('hey hello')
     const knexInstance = req.app.get('db')
@@ -83,7 +84,7 @@ exercisesRouter
       })
       .catch(next)
   })
-  .get((req, res, next) => { //req and next not being used??
+  .get((req, res, next) => { 
     res.json(serializeExercises(res.exercises))
   })
   .delete((req, res, next) => {
