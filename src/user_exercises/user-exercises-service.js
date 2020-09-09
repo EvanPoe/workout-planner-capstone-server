@@ -1,6 +1,6 @@
 const ExercisesService = {
   //get all exercises from database
-  getExercisess(db) {
+  getExercises(db) {
     return db
       .from('exercises')
       .select( '*' )

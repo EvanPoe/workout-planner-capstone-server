@@ -8,7 +8,8 @@ const errorHandler = require('./middleware/error-handler')
 const todoRouter = require('./todo/todo-router')
 const usersRouter = require('./users/users-router')
 const authRouter = require('./auth/auth-router')
-const exercisesRouter = require('./exercises/exercises-router')
+const userExercisesRouter = require('./user_exercises/user-exercises-router')
+const exercisesTemplatesRouter = require('./exercises_templates/exercises-templates-router')
 const workoutsRouter = require('./workouts/workouts-router')
 
 const app = express()
@@ -30,8 +31,10 @@ app.use('/v1/todos', todoRouter)
 app.use('/api/users', usersRouter)
 //load in the authentication router, for login
 app.use('/api/auth', authRouter)
-//load in the exercises router
-app.use('/api/exercises', exercisesRouter)
+//load in user specific exercises router
+app.use('/api/user-exercises', userExercisesRouter)
+//load in templated exercises router
+app.use('/api/exercises-templates', exercisesTemplatesRouter)
 //load in the workouts router
 app.use('/api/workouts', workoutsRouter)
 //??? 

@@ -1,7 +1,7 @@
 const path = require('path')
 const express = require('express')
 const xss = require('xss')
-const ExercisesService = require('./exercises-service')
+const UserExercisesService = require('./user-exercises-service')
 const workoutsRouter = require('../workouts/workouts-router') //??? not being used?
 
 const exercisesRouter = express.Router()
@@ -9,7 +9,7 @@ const jsonParser = express.json()
 
 const serializeExercises = exercises => ({
   id: exercises.id,
-  workout_id: exercises.workouts_id,
+  workout_id: exercises.workout_id,
   name: xss(exercises.name),
   image: xss(exercises.image),
   description: xss(exercises.description),
@@ -28,9 +28,10 @@ exercisesRouter
   .get((req, res, next) => {
     console.log('hey hello')
     const knexInstance = req.app.get('db')
-    ExercisesService.getExercisess(knexInstance)
-      .then(exercisess => {
-        res.json(exercisess.map(serializeExercises))
+    UserExercisesService.getExercises(knexInstance)
+      .then(exercises => {
+        console.log(exercises)
+        res.json(exercises.map(serializeExercises))
       })
       .catch(next)
   })
@@ -45,9 +46,8 @@ exercisesRouter
           error: { message: `Missing '${key}' in request body` }
         })
 
-    // newExercises.completed = completed;  not needed?
 
-    ExercisesService.insertExercises(
+    UserExercisesService.insertExercises(
       req.app.get('db'),
       newExercises
     )
@@ -60,16 +60,16 @@ exercisesRouter
       .catch(next)
   })
 
+  //get exercises by id
 exercisesRouter
   .route('/:exercises_id')
   .all((req, res, next) => {
-    //if not a number, parse into a number.... then???
     if(isNaN(parseInt(req.params.exercises_id))) {
       return res.status(404).json({
         error: { message: `Invalid id` }
       })
     }
-    ExercisesService.getExercisesByExerciseId(
+    UserExercisesService.getExercisesByExerciseId(
       req.app.get('db'),
       req.params.exercises_id
     )
@@ -88,7 +88,7 @@ exercisesRouter
     res.json(serializeExercises(res.exercises))
   })
   .delete((req, res, next) => {
-    ExercisesService.deleteExercises(
+    UserExercisesService.deleteExercises(
       req.app.get('db'),
       req.params.exercises_id
     )
@@ -111,7 +111,7 @@ exercisesRouter
         }
       })
       //then...??? how exactly?
-    ExercisesService.updateExercises(
+    UserExercisesService.updateExercises(
       req.app.get('db'),
       req.params.exercises_id,
       exercisesToUpdate
@@ -131,7 +131,7 @@ exercisesRouter
       error: { message: `Invalid id` }
     })
   }
-  ExercisesService.getExercisesByWorkoutId(
+  UserExercisesService.getExercisesByWorkoutId(
     req.app.get('db'),
     req.params.workout_id
   )
