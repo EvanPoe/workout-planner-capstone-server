@@ -3,6 +3,7 @@ const express = require("express");
 const xss = require("xss");
 const WorkoutsService = require("./workouts-service");
 const UserExercisesService = require("../user_exercises/user-exercises-service");
+const ExercisesTemplatesService = require("../exercises_templates/exercises-templates-service");
 
 const workoutsRouter = express.Router();
 const jsonParser = express.json();
@@ -38,11 +39,12 @@ workoutsRouter
 
     WorkoutsService.insertWorkouts(req.app.get("db"), newWorkouts)
       .then((workouts) => {
-        //get all exercises
-        UserExercisesService.getExercises(knexInstance)
+        //console.log(workouts.id);
+        //get all exercises from the templates
+        ExercisesTemplatesService.getExercisesTemplates(knexInstance)
           .then((allExercises) => {
             //   console.log("all exercises", allExercises)
-            let outputExercises = [];
+            let templateOutputExercises = [];
             for (let i = 0; i < allExercises.length; i++) {
               //gives one exercise at a time
               //console.log("one exercise", allExercises[i]);
@@ -54,19 +56,19 @@ workoutsRouter
                   allExercises[i].is_beginner == 1
                 ) {
                   //console.log("is Beginner", allExercises[i].is_beginner);
-                  outputExercises.push(allExercises[i]);
+                  templateOutputExercises.push(allExercises[i]);
                 } else if (
                   difficulty == "Intermediate" &&
                   allExercises[i].is_intermediate == 1
                 ) {
                   //console.log("is Intermediate", allExercises[i].is_intermediate);
-                  outputExercises.push(allExercises[i]);
+                  templateOutputExercises.push(allExercises[i]);
                 } else if (
                   difficulty == "Advanced" &&
                   allExercises[i].is_advanced == 1
                 ) {
                   //console.log("is Advanced", allExercises[i].is_advanced);
-                  outputExercises.push(allExercises[i]);
+                  templateOutputExercises.push(allExercises[i]);
                 }
               } else if (
                 type == "Lower Body" &&
@@ -78,24 +80,53 @@ workoutsRouter
                   allExercises[i].is_beginner == 1
                 ) {
                   //console.log("is Beginner", allExercises[i].is_beginner);
-                  outputExercises.push(allExercises[i]);
+                  templateOutputExercises.push(allExercises[i]);
                 } else if (
                   difficulty == "Intermediate" &&
                   allExercises[i].is_intermediate == 1
                 ) {
                   //console.log("is Intermediate", allExercises[i].is_intermediate);
-                  outputExercises.push(allExercises[i]);
+                  templateOutputExercises.push(allExercises[i]);
                 } else if (
                   difficulty == "Advanced" &&
                   allExercises[i].is_advanced == 1
                 ) {
                   //console.log("is Advanced", allExercises[i].is_advanced);
-                  outputExercises.push(allExercises[i]);
+                  templateOutputExercises.push(allExercises[i]);
                 }
               }
             }
-            console.log("All the exercises there are", outputExercises);
-            //save the filtered exercises into the database TO DO
+            //console.log("All the exercises in the template", templateOutputExercises);
+            //map all the template exercises
+            for (let j = 0; j < templateOutputExercises.length; j++) {
+              //add the workoutID to each one of them
+              let oneExercisePayload = {
+                id: templateOutputExercises[j].id,
+                workout_id: workouts.id,
+                name: templateOutputExercises[j].name,
+                image: templateOutputExercises[j].image,
+                description: templateOutputExercises[j].description,
+                sets: templateOutputExercises[j].sets,
+                rest: templateOutputExercises[j].rest,
+                is_upper: templateOutputExercises[j].is_upper,
+                is_lower: templateOutputExercises[j].is_lower,
+                is_beginner: templateOutputExercises[j].is_beginner,
+                is_intermediate: templateOutputExercises[j].is_intermediate,
+                is_advanced: templateOutputExercises[j].is_advanced,
+              };
+              //console.log("one exercise payload", oneExercisePayload);
+              //save the filtered exercises into the database TO DO
+              UserExercisesService.insertExercises(
+                req.app.get("db"),
+                oneExercisePayload
+              )
+                .then((exercises) => {
+                  console.log("new user exercises inserted = ", exercises);
+                  //res.status(201).json(serializeExercises(exercises));
+                })
+                .catch(next);
+            }
+
             //res.json(exercises.map(serializeExercises))
           })
           .catch(next);
