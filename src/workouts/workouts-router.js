@@ -165,6 +165,94 @@ workoutsRouter
     res.json(res.workouts.map(serializeWorkouts));
   });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//get workouts by user id, type, and difficulty
+workoutsRouter
+  .route("/users/:user_id/:difficulty_name/:type_name")
+  .all((req, res, next) => {
+    //check for valid user id
+    console.log("user id, difficulty, type !!!!!!!!!!!!!!!!", req.params.user_id, req.params.difficulty_name, req.params.type_name)
+    if (isNaN(parseInt(req.params.user_id))) {
+      return res.status(404).json({
+        error: { message: `Invalid id` },
+      });
+    }
+    //check for valid difficulty
+    if (!req.params.difficulty_name) {
+      return res.status(404).json({
+        error: { message: `Invalid difficulty` },
+      });
+    }
+    //check for valid type
+    if (!req.params.type_name) {
+      return res.status(404).json({
+        error: { message: `Invalid type` },
+      });
+    }
+    WorkoutsService.getWorkoutsByUserIdTypeDifficulty(req.app.get("db"), req.params.user_id, req.params.difficulty_name, req.params.type_name)
+      .then((workouts) => {
+        //if there are no workouts, return an empty array
+        if (!workouts) {
+          res.workouts = [];
+        }
+        //if there are workouts, return them
+        else {
+          res.workouts = workouts;
+        }
+        next();
+      })
+      .catch(next);
+  })
+  .get((req, res, next) => {
+    res.json(res.workouts);
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //get workouts by workout id
 workoutsRouter
   .route("/:workouts_id")
