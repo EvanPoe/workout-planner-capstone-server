@@ -49,46 +49,46 @@ workoutsRouter
               //gives one exercise at a time
               //console.log("one exercise", allExercises[i]);
               //filter all exercises to match the workout selected
-              if (type == "Upper Body" && allExercises[i].is_upper == 1) {
+              if (type.toLowerCase() == "upper" && allExercises[i].is_upper == 1) {
                 //console.log("is upper body", allExercises[i].is_upper);
                 if (
-                  difficulty == "Beginner" &&
+                  difficulty.toLowerCase() == "beginner" &&
                   allExercises[i].is_beginner == 1
                 ) {
                   //console.log("is Beginner", allExercises[i].is_beginner);
                   templateOutputExercises.push(allExercises[i]);
                 } else if (
-                  difficulty == "Intermediate" &&
+                  difficulty.toLowerCase() == "intermediate" &&
                   allExercises[i].is_intermediate == 1
                 ) {
                   //console.log("is Intermediate", allExercises[i].is_intermediate);
                   templateOutputExercises.push(allExercises[i]);
                 } else if (
-                  difficulty == "Advanced" &&
+                  difficulty.toLowerCase() == "advanced" &&
                   allExercises[i].is_advanced == 1
                 ) {
                   //console.log("is Advanced", allExercises[i].is_advanced);
                   templateOutputExercises.push(allExercises[i]);
                 }
               } else if (
-                type == "Lower Body" &&
+                type.toLowerCase() == "lower" &&
                 allExercises[i].is_lower == 1
               ) {
                 //console.log("is lower body", allExercises[i].is_lower);
                 if (
-                  difficulty == "Beginner" &&
+                  difficulty.toLowerCase() == "beginner" &&
                   allExercises[i].is_beginner == 1
                 ) {
                   //console.log("is Beginner", allExercises[i].is_beginner);
                   templateOutputExercises.push(allExercises[i]);
                 } else if (
-                  difficulty == "Intermediate" &&
+                  difficulty.toLowerCase() == "intermediate" &&
                   allExercises[i].is_intermediate == 1
                 ) {
                   //console.log("is Intermediate", allExercises[i].is_intermediate);
                   templateOutputExercises.push(allExercises[i]);
                 } else if (
-                  difficulty == "Advanced" &&
+                  difficulty.toLowerCase() == "advanced" &&
                   allExercises[i].is_advanced == 1
                 ) {
                   //console.log("is Advanced", allExercises[i].is_advanced);
