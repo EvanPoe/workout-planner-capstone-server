@@ -61,7 +61,7 @@ workoutsRouter
                   difficulty.toLowerCase() == "intermediate" &&
                   allExercises[i].is_intermediate == 1
                 ) {
-                  //console.log("is Intermediate", allExercises[i].is_intermediate);
+                  // console.log("is Intermediate", allExercises[i].is_intermediate);
                   templateOutputExercises.push(allExercises[i]);
                 } else if (
                   difficulty.toLowerCase() == "advanced" &&
@@ -85,7 +85,7 @@ workoutsRouter
                   difficulty.toLowerCase() == "intermediate" &&
                   allExercises[i].is_intermediate == 1
                 ) {
-                  //console.log("is Intermediate", allExercises[i].is_intermediate);
+                  // console.log("is Intermediate", allExercises[i].is_intermediate);
                   templateOutputExercises.push(allExercises[i]);
                 } else if (
                   difficulty.toLowerCase() == "advanced" &&
@@ -96,12 +96,12 @@ workoutsRouter
                 }
               }
             }
-            //console.log("All the exercises in the template", templateOutputExercises);
+            // console.log("All the exercises in the template", templateOutputExercises);
             //map all the template exercises
             for (let j = 0; j < templateOutputExercises.length; j++) {
               //add the workoutID to each one of them
               let oneExercisePayload = {
-                id: templateOutputExercises[j].id,
+                // id: templateOutputExercises[j].id,
                 workout_id: workouts.id,
                 name: templateOutputExercises[j].name,
                 image: templateOutputExercises[j].image,
@@ -114,7 +114,7 @@ workoutsRouter
                 is_intermediate: templateOutputExercises[j].is_intermediate,
                 is_advanced: templateOutputExercises[j].is_advanced,
               };
-              //console.log("one exercise payload", oneExercisePayload);
+              // console.log("one exercise payload", oneExercisePayload);
               //save the filtered exercises into the database TO DO
               UserExercisesService.insertExercises(
                 req.app.get("db"),

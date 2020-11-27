@@ -2,7 +2,7 @@
 A library for workouts based on workout type and difficulty.
 
 ## Working Prototype
-You can access a working prototype of the React app here: https://your-app-client.herokuapp.com/ and Node app here: https://workout-planner-capstone.herokuapp.com/
+You can access a working prototype of the React app here: https://workout-planner-capstone.vercel.app/ and Node app here: https://workout-planner-capstone.herokuapp.com/
 
 
 ## User Stories
