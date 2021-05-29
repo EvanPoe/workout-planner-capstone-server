@@ -2,6 +2,8 @@ require('dotenv').config()
 const app = require('./app')
 const { PORT, DB_URL } = require('./config')
 const knex = require('knex')
+const pg = require('pg');
+pg.defaults.ssl = process.env.NODE_ENV === "production";
 
 //tell knex how to connect to db, using the client (postgres) 
 //and the url for the databse
